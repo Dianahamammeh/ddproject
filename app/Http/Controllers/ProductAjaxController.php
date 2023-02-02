@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\User;
 use DataTables;
 
 class ProductAjaxController extends Controller
@@ -32,6 +33,7 @@ class ProductAjaxController extends Controller
         }
       
         return view('product.product');
+        
     }
 
     // public function store(Request $request)
@@ -154,6 +156,11 @@ class ProductAjaxController extends Controller
     $user->save();
     return view('product.productlist');
 
+    }
+
+    public function get_pro (){
+        $item = User::first();
+        return response()->json($item);
     }
 
     

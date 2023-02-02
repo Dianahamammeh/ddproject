@@ -11,6 +11,7 @@ class UserController extends Controller
 
     public function index()
     {
+       
     if(request()->ajax()) {
     return datatables()->of(User::select('*'))
     ->addColumn('action', 'user.action')
@@ -28,6 +29,7 @@ class UserController extends Controller
     */
     public function create()
     {
+        
     return view('user.create');
     }
     /**
@@ -38,6 +40,7 @@ class UserController extends Controller
     */
     public function store(Request $request)
     {
+        
     $request->validate([
     'first_name' => 'required',
     'last_name' => 'required',

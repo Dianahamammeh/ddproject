@@ -45,6 +45,8 @@
 </div>
 </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+
 <script type="text/javascript">
 $(document).ready( function () {
 $.ajaxSetup({
@@ -65,25 +67,78 @@ columns: [
 ],
 order: [[0, 'desc']]
 });
-$('body').on('click', '.delete', function () {
-if (confirm("Delete Record?") == true) {
-var id = $(this).data('id');
-// ajax
-$.ajax({
-type:"POST",
-url: "{{ url('destroypro') }}",
-data: { id: id},
-dataType: 'json',
-success: function(res){
-var oTable = $('#datatable-crud').dataTable();
-oTable.fnDraw(false);
-}
-});
-}
-});
+// $('body').on('click', '.delete', function () {
+// if (confirm("Delete Record?") == true) {
+// var id = $(this).data('id');
+// // ajax
+// $.ajax({
+// type:"POST",
+// url: "{{ url('destroypro') }}",
+// data: { id: id},
+// dataType: 'json',
+// success: function(res){
+// var oTable = $('#datatable-crud').dataTable();
+// oTable.fnDraw(false);
+// }
+// });
+// }
+// });
+
+$('body').on('click', '.delete', function (event) {
+    //  $('.show_confirm').click(function(event) {
+
+          var form =  $(this).closest("form");
+
+          var name = $(this).data("name");
+
+          event.preventDefault();
+
+          swal({
+
+              title: `Are you sure you want to delete this record?`,
+
+              text: "If you delete this, it will be gone forever.",
+
+              icon: "warning",
+
+              buttons: true,
+
+              dangerMode: true,
+
+          })
+
+          .then((willDelete) => {
+
+            if (willDelete) {
+
+              form.submit();
+            var id = $(this).data('id');
+                // ajax
+                $.ajax({
+                type:"POST",
+                url: "{{ url('destroypro') }}",
+                data: { id: id},
+                dataType: 'json',
+                success: function(res){
+                var oTable = $('#datatable-crud').dataTable();
+                oTable.fnDraw(false);
+                }
+                });
+            
+
+            }
+
+          });
+
+      });
+
+  
+
+
 
 $('body').on('click', '.edit', function () {
-if (confirm("Edit Record?") == true) {
+// if (confirm("Edit Record?") == true)
+//  {
 var id = $(this).data('id');
 
 // ajax
@@ -98,7 +153,7 @@ var oTable = $('#datatable-crud').dataTable();
 oTable.fnDraw(false);
 }
 });
-}
+// }
 });
 
 });

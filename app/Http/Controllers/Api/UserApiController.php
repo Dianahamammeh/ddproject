@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
+
 class UserApiController extends Controller
 {
     public function store(Request $request)
@@ -51,12 +52,7 @@ class UserApiController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, user $product)
-    {
-        $project->update($request->all());
-
-        return response(['user' => new userResource($user), 'message' => 'Update successfully'], 200);
-    }
+   
 
     /**
      * Remove the specified resource from storage.
@@ -64,11 +60,12 @@ class UserApiController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(user $user)
+    public function delete($id)
     {
-        $product->delete();
-
-        return response(['message' => 'Deleted']);
+        $user = User::findOrFail($id);
+        $result = $user->delete();
+        if($result){
+            return ['result'=>'Record has been deleted'];
+        }
     }
-    
 }

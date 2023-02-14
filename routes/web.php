@@ -37,7 +37,7 @@ Route::post('saveproduct',[ProductAjaxController::class,'store'])->name('savepro
 Route::get('productlist',[ProductAjaxController::class,'productlist'])->name('productlist')->Middleware('auth');
 Route::get('productindex',[ProductAjaxController::class,'productindex'])->name('productindex')->Middleware('auth');
 
-Route::get('destroypro/{id}', [ProductAjaxController::class,'destroypro'])->name('destroypro')->Middleware('auth');
+Route::post('destroypro', [ProductAjaxController::class,'destroypro'])->name('destroypro')->Middleware('auth');
 
 Route::get('edit_product/{id}', [ProductAjaxController::class,'edit_product'])->name('edit_product')->Middleware('auth');
 

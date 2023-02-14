@@ -63,12 +63,27 @@ class ProductApiController extends Controller
      * @param  \App\Models\product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, product $product)
+    public function update(Request $request,  $id)
     {
-        $product->update($request->all());
+        // $product->update($request->all());
 
-        return response(['product' => new productResource($product), 'message' => 'Update successfully'], 200);
+        // return response(['product' => new productResource($product), 'message' => 'Update successfully'], 200);
+        $data = array();
+        $data['name'] = $request->name;
+        $data['description'] = $request->description;
+       $data['image'] = $request->image;
+       if($request->file('public/image')->isValid()){
+
+        
+        $image = $request->image->store('livros');
+        $data['image'] = $image;}
+        $product = DB::table('products')->where('id', $id)->update($data);
+        
+         return response(['product' => $product, 'message' => 'Update successfully'], 200);
+
     }
+
+   
 
     /**
      * Remove the specified resource from storage.
@@ -76,11 +91,14 @@ class ProductApiController extends Controller
      * @param  \App\Models\product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(product $product)
-    {
-        $product->delete();
-
-        return response(['message' => 'Deleted']);
+    public function destroy($name)
+{
+    
+    $product=Product::where('name',$name)->first();
+    $result = $product->delete();
+    if($result){
+        return ['result'=>'Record has been deleted'];
     }
+}
 }
 

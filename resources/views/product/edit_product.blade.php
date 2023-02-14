@@ -47,12 +47,12 @@
 
 
 <strong>Image:</strong>
-<input type="file" name="image" class="form-control" placeholder="Image" value="{{ $product->image}}">
+<input type="file" id="image" name="image" class="form-control" placeholder="Image" value="{{ $product->image}}">
 <div class="image">
     <label><h4>view image</h4></label>
     {{-- @foreach ($product as $item) --}}
-    <img src="{{ url('public/Image/'.$product->image) }}"
-    style="height: 100px; width: 150px;">
+    <img  src="{{ url('public/Image/'.$product->image) }}" id="preview-image-before-upload"
+    alt="preview image" style="max-height: 250px;">
     {{-- @endforeach --}}
 
   </div>
@@ -66,5 +66,27 @@
 </div>
 </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
+    <script type="text/javascript">
+      
+    $(document).ready(function (e) {
+     
+       
+       $('#image').change(function(){
+                
+        let reader = new FileReader();
+     
+        reader.onload = (e) => { 
+     
+          $('#preview-image-before-upload').attr('src', e.target.result); 
+        }
+     
+        reader.readAsDataURL(this.files[0]); 
+       
+       });
+       
+    });
+     
+    </script>
 </body>
 </html>

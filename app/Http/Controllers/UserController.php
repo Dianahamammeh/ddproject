@@ -118,8 +118,11 @@ class UserController extends Controller
     */
     public function destroy(Request $request)
     {
-    $com = User::where('id',$request->id)->delete();
-    return Response()->json($com);
+        
+    User::where('id',$request->id)->delete();
+    // return Response()->json($com);
+    return redirect()->route('users.index')
+    ->with('success','User Has Been deleted successfully');
     }
     }
     

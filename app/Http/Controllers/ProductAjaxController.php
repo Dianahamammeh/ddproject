@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\User;
 use DataTables;
 
 class ProductAjaxController extends Controller
@@ -33,7 +32,6 @@ class ProductAjaxController extends Controller
         }
       
         return view('product.product');
-        
     }
 
     // public function store(Request $request)
@@ -61,23 +59,22 @@ class ProductAjaxController extends Controller
      */
     public function store(Request $request)
     {
-
-        // $data= new Postimage();
-
         if($request->file('image')){
             $file= $request->file('image');
             $filename= $file->getClientOriginalName();
             $file-> move(public_path('public/Image'), $filename);
             $data['image']= $filename;
         }
-        // $data->save();
+       
 
         Product::Create([
                 'name' => $request->name,
-                 'image' => $filename,
-                  'description' => $request->description]);        
+                'image' => $filename,
+                'description' => $request->description]);        
    
-        return response()->json(['success'=>'Product saved successfully.']);
+        // return response()->json(['success'=>'Product saved successfully.']);
+        return redirect()->route('productlist');
+
     }
     /**
      * Show the form for editing the specified resource.
@@ -92,28 +89,36 @@ class ProductAjaxController extends Controller
 
     }
 
-    
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroypro($id)
+    public function destroypro(Request $request)
     {
-        Product::find($id)->delete();
-     
-        return response()->json(['success'=>'Product deleted successfully.']);
-    }
+        Product::where('id',$request->id)->delete();
+    return redirect()->route('productlist')
+    ->with('success','User Has Been deleted successfully');
+    
+        // Product::find($id)->delete();
+        //   return redirect()->route('productlist');
 
-   
+        // return response()->json(['success'=>'Product deleted successfully.']);
+    }
 
     public function productlist()
     {
     if(request()->ajax()) {
-    return datatables()->of(Product::select('*'))
+    // return datatables()->of(Product::select('*'))
+    $data = Product::select('id', 'name', 'image', 'description');
+            return Datatables::of($data)->addIndexColumn()
+                ->addIndexColumn()
+                ->addColumn('image', function ($row) {
+                    return '<a href=' . asset('/public/Image/'.$row->image) . ' target="blank"><img src="' . asset($row->image) . '" alt="" width="150" height="150"></a>';
+                })
     ->addColumn('action', 'product.action')
-    ->rawColumns(['action'])
+    ->rawColumns(['image','action'])
     ->addIndexColumn(
     )
     ->make(true);
@@ -124,9 +129,15 @@ class ProductAjaxController extends Controller
     public function productindex()
     {
     if(request()->ajax()) {
-    return datatables()->of(Product::select('*'))
+    // return datatables()->of(Product::select('*'))
+    $data = Product::select('id', 'name', 'image', 'description');
+    return Datatables::of($data)->addIndexColumn()
+        ->addIndexColumn()
+        ->addColumn('image', function ($row) {
+            return '<a href=' . asset('/public/Image'.$row->image) . ' target="blank"><img src="' . asset('/public/Image/'.$row->image) . '" alt="" width="150" height="150"></a>';
+        })
     ->addColumn('action', 'product.actionproduct')
-    ->rawColumns(['action'])
+    ->rawColumns(['image','action'])
     ->addIndexColumn(
     )
     ->make(true);
@@ -142,26 +153,18 @@ class ProductAjaxController extends Controller
             $filename= $file->getClientOriginalName();
             $file-> move(public_path('public/Image'), $filename);
             $data['image']= $filename;
-        }
-
+        }        
     $request->validate([
     'name' => 'required',
     'description' => 'required',
     // 'phone_number' => 'required',
     ]);
-    $user = product::find($id);
-    $user->name = $request->name;
-    $user->image = $filename;
-    $user->description = $request->description;
-    $user->save();
+    $product = product::find($id);
+    $product->name = $request->name;
+    $product->image = $filename;
+    $product->description = $request->description;
+    $product->save();
     return view('product.productlist');
 
     }
-
-    public function get_pro (){
-        $item = User::first();
-        return response()->json($item);
-    }
-
-    
 }

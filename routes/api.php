@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductAjaxController;
 use App\Http\Controllers\LoginUserRequest;
 use App\Http\Controllers\Api\ProductApiController;
 use App\Http\Controllers\Api\UserApiController;
+use App\Http\Controllers\ProductController;
 
 
 
@@ -35,7 +36,7 @@ Route::post('logout',[passportAuthController::class,'Logout']);
 //Route::get('get_pro',[ProductAjaxController::class , 'get_pro'])->name('get_pro');
 //Route::resource('/tasks',TasksController::class);
 
-Route::apiResource('products', ProductApiController::class)->middleware('auth:api');
+//Route::apiResource('products', ProductApiController::class)->middleware('auth:api');
 
 
 
@@ -43,7 +44,17 @@ Route::apiResource('user', UserApiController::class)->middleware('auth:api');
 
 
 Route::delete('/user/delete/{id}',[UserApiController::class, 'delete']);
-Route::delete('/products/destroy/{name}',[ProductApiController::class, 'destroy']);
+//Route::delete('/products/destroy/{name}',[ProductApiController::class, 'destroy']);
+
+
+Route::get('products', [ProductController::class, 'index']); 
+Route::get('products/{id}', [ProductController::class, 'show']); 
+Route::post('products', [ProductController::class, 'store']); 
+Route::put('products/{id}', [ProductController::class, 'update']);
+Route::delete('products/{id}', [ProductController::class, 'destroy']);
+ 
+//resource route
+//Route::resource('products', ProductController::class);
 
 Route::get('test', function (){
     return response([

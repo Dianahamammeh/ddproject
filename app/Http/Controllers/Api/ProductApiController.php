@@ -72,12 +72,14 @@ class ProductApiController extends Controller
         $data['name'] = $request->name;
         $data['description'] = $request->description;
        $data['image'] = $request->image;
-       if($request->file('public/image')->isValid()){
+
+       $result=$request->file('file')->store('apiDocs');
+    //    if($request->file('public/image')->isValid()){
 
         
-        $image = $request->image->store('livros');
-        $data['image'] = $image;}
-        $product = DB::table('products')->where('id', $id)->update($data);
+    //     $image = $request->image->store('livros');
+    //     $data['image'] = $image;}
+    //     $product = DB::table('products')->where('id', $id)->update($data);
         
          return response(['product' => $product, 'message' => 'Update successfully'], 200);
 

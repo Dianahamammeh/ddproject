@@ -1,9 +1,9 @@
 <?php
- 
+
 namespace App\Http\Requests;
- 
+
 use Illuminate\Foundation\Http\FormRequest;
- 
+
 class ProductStoreRequest extends FormRequest
 {
     public function authorize()
@@ -11,10 +11,10 @@ class ProductStoreRequest extends FormRequest
         //return false;
         return true;
     }
- 
+
     public function rules()
     {
-        if(request()->isMethod('post')) {
+        if (request()->isMethod('post')) {
             return [
                 'name' => 'required|string|max:258',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -28,10 +28,10 @@ class ProductStoreRequest extends FormRequest
             ];
         }
     }
- 
+
     public function messages()
     {
-        if(request()->isMethod('post')) {
+        if (request()->isMethod('post')) {
             return [
                 'name.required' => 'Name is required!',
                 'image.required' => 'Image is required!',
@@ -41,7 +41,7 @@ class ProductStoreRequest extends FormRequest
             return [
                 'name.required' => 'Name is required!',
                 'description.required' => 'Descritpion is required!'
-            ];   
+            ];
         }
     }
 }

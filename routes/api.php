@@ -1,14 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\passportAuthController;
-use App\Http\Controllers\ProductAjaxController;
-use App\Http\Controllers\LoginUserRequest;
 use App\Http\Controllers\Api\ProductApiController;
 use App\Http\Controllers\Api\UserApiController;
-use App\Http\Controllers\ProductController;
-
+use Illuminate\Support\Facades\Route;
 
 
 /*
@@ -22,41 +16,40 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-Route::post('register',[passportAuthController::class,'registerUserExample']);
-Route::post('login',[passportAuthController::class,'login']);
+Route::post('/user/register', [UserApiController::class, 'register']);
+Route::post('/user/login', [UserApiController::class, 'login']);
+Route::post('/user/resendotp', [UserApiController::class, 'sendOTP']);
+Route::post('/user/verify', [UserApiController::class, 'verifyEmail']);
+Route::post('/user/update/{id}', [UserApiController::class, 'update'])
+    ->middleware('auth:api');
+Route::post('/user/assign/{id}', [UserApiController::class, 'assignProducts'])
+    ->middleware('auth:api');
 
-//Route::post('login', [passportAuthController::class, 'login'])->name('auth.login');
-
-Route::post('logout',[passportAuthController::class,'Logout']);
-
-
-//Route::get('get_pro',[ProductAjaxController::class , 'get_pro'])->name('get_pro');
-//Route::resource('/tasks',TasksController::class);
-
-//Route::apiResource('products', ProductApiController::class)->middleware('auth:api');
-
-
-
-Route::apiResource('user', UserApiController::class)->middleware('auth:api');
+Route::delete('/user/{id}', [UserApiController::class, 'delete'])
+    ->middleware('auth:api');
+Route::get('/user/{id}', [UserApiController::class, 'details'])
+    ->middleware('auth:api');
+    
+Route::get('user', [UserApiController::class, 'list']);
 
 
-Route::delete('/user/delete/{id}',[UserApiController::class, 'delete']);
-//Route::delete('/products/destroy/{name}',[ProductApiController::class, 'destroy']);
+
+Route::post('/product', [ProductApiController::class, 'create'])
+    ->middleware('auth:api');
+Route::get('/product', [ProductApiController::class, 'index'])
+    ->middleware('auth:api');
+Route::post('/product/update/{id}', [ProductApiController::class, 'update'])
+    ->middleware('auth:api');
+Route::get('/product/user/{id}', [ProductApiController::class, 'user'])
+    ->middleware('auth:api');
+
+Route::delete('/product/{id}', [ProductApiController::class, 'delete'])
+    ->middleware('auth:api');
+Route::get('/product/{id}', [ProductApiController::class, 'details'])
+    ->middleware('auth:api');
 
 
-Route::get('products', [ProductController::class, 'index']); 
-Route::get('products/{id}', [ProductController::class, 'show']); 
-Route::post('products', [ProductController::class, 'store']); 
-Route::put('products/{id}', [ProductController::class, 'update']);
-Route::delete('products/{id}', [ProductController::class, 'destroy']);
- 
-//resource route
-//Route::resource('products', ProductController::class);
-
-Route::get('test', function (){
+Route::get('test', function () {
     return response([
         "message" => 'Authenticated!'
     ], 200);

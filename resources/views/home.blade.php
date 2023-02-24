@@ -66,6 +66,7 @@
                                 <li class="submenu-item ">
                                     <a href="{{ route('product') }}">creat product</a>
                                     <a href="{{ route('productlist') }}">list prodct</a>
+                                  
                                 </li>
                             </ul>
                         </li>
@@ -383,6 +384,8 @@
     <script src="assets/js/pages/dashboard.js"></script>
 
     <script src="assets/js/main.js"></script>
+
+ 
 </body>
 
 </html>

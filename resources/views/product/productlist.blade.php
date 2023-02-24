@@ -67,6 +67,7 @@ columns: [
 ],
 order: [[0, 'desc']]
 });
+
 // $('body').on('click', '.delete', function () {
 // if (confirm("Delete Record?") == true) {
 // var id = $(this).data('id');
@@ -124,7 +125,7 @@ $('body').on('click', '.delete', function (event) {
                 oTable.fnDraw(false);
                 }
                 });
-            
+
 
             }
 
@@ -132,7 +133,7 @@ $('body').on('click', '.delete', function (event) {
 
       });
 
-  
+
 
 
 

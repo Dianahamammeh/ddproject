@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -29,7 +30,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected $redirectTo = RouteServiceProvider::UserHOME;
 
     /**
      * Create a new controller instance.
@@ -44,7 +45,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -62,19 +63,34 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \App\Models\User
      */
     protected function create(array $data)
     {
+        // $otp = rand(1000, 9999);
+        // Mail::raw('G-' . $otp . ' is your verification code.', function ($message) use ($data) {
+        //     $message->to($data['email'])->subject("Email Verification");
+        // });
 
-        // dd($data);
         return User::create([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'phone_number' => $data['phone_number'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'otp'=>1,
         ]);
     }
+
+    // protected function redirectTo()
+    // {
+    // redirect to white screen
+    //     if (auth()->user()->email_verified_at) {
+    //         return RouteServiceProvider::HOME;
+    //     }
+
+    // need to be created
+    //     return '/user-verify';
+    // }
 }

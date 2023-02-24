@@ -14,10 +14,10 @@
 <div class="row">
 <div class="col-lg-12 margin-tb">
 <div class="pull-left">
-<h2> Users</h2>
+<h2> product</h2>
 </div>
 <div class="pull-right mb-2">
-<a class="btn btn-success" href="{{ route('users.create') }}"> Create User</a>
+<a class="btn btn-success" href="{{ route('product') }}"> Create product</a>
 </div>
 </div>
 </div>
@@ -30,11 +30,12 @@
 <table class="table table-bordered" id="datatable-crud">
 <thead>
 <tr>
-<th>Id</th>
-<th>First_Name</th>
-<th>Last_Name</th>
-<th>Phone Number</th>
-<th>Email</th>
+<th>Name</th>
+<th>Description</th>
+<th>Image</th>
+
+
+
 
 {{-- <th>Created at</th> --}}
 <th>Action</th>
@@ -53,28 +54,26 @@ headers: {
 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 }
 });
-$('#datatable-crud').DataTable({
-processing: true,
-serverSide: true,
-ajax: "{{ url('users') }}",
-columns: [
-{ data: 'id', name: 'id' },
-{ data: 'first_name', name: 'first_name' },
-{ data: 'last_name', name: 'last_name' },
-{ data: 'phone_number', name: 'phone_number' },
-{ data: 'email', name: 'email' },
-// { data: 'created_at', name: 'created_at' },
-{data: 'action', name: 'action', orderable: false},
-],
-order: [[0, 'desc']]
-});
+// $('#datatable-crud').DataTable({
+// processing: true,
+// serverSide: true,
+// ajax: "{{ url('productindex') }}",
+// columns: [
+// { data: 'name', name: 'name' },
+// { data: 'description', name: 'description' },
+// { data: 'image', name: 'image' },
+// // { data: 'created_at', name: 'created_at' },
+// {data: 'action', name: 'action', orderable: false},
+// ],
+// order: [[0, 'desc']]
+// });
 // $('body').on('click', '.delete', function () {
 // if (confirm("Delete Record?") == true) {
 // var id = $(this).data('id');
 // // ajax
 // $.ajax({
 // type:"POST",
-// url: "{{ url('delete-user') }}",
+// url: "{{ url('destroypro') }}",
 // data: { id: id},
 // dataType: 'json',
 // success: function(res){
@@ -84,10 +83,6 @@ order: [[0, 'desc']]
 // });
 // }
 // });
-
-
-
-
 
 $('body').on('click', '.delete', function (event) {
     //  $('.show_confirm').click(function(event) {
@@ -121,7 +116,7 @@ $('body').on('click', '.delete', function (event) {
                 // ajax
                 $.ajax({
                 type:"POST",
-                url: "{{ url('delete-user') }}",
+                url: "{{ url('destroypro') }}",
                 data: { id: id},
                 dataType: 'json',
                 success: function(res){
@@ -141,15 +136,17 @@ $('body').on('click', '.delete', function (event) {
 
 
 
-
 $('body').on('click', '.edit', function () {
-// if (confirm("Edit Record?") == true) {
+// if (confirm("Edit Record?") == true)
+//  {
 var id = $(this).data('id');
+
 // ajax
 $.ajax({
 type:"POST",
-url: "{{ url('edit') }}",
+url: "{{ url('edit_product') }}",
 data: { id: id},
+
 dataType: 'json',
 success: function(res){
 var oTable = $('#datatable-crud').dataTable();
@@ -159,6 +156,20 @@ oTable.fnDraw(false);
 // }
 });
 
+
+$('#datatable-crud').DataTable({
+processing: true,
+serverSide: true,
+ajax: "{{ url('productindex') }}",
+columns: [
+{ data: 'name', name: 'name' },
+{ data: 'description', name: 'description' },
+{ data: 'image', name: 'image' },
+// { data: 'created_at', name: 'created_at' },
+{data: 'action', name: 'action', orderable: false},
+],
+order: [[0, 'desc']]
+});
 
 $('body').on('click', '.products', function () {
 $('#datatable-crud').empty();

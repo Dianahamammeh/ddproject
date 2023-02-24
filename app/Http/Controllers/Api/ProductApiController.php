@@ -3,104 +3,148 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ProductApiController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
-        $Products = Product::all();
-        return response([ 'products' => productResource::collection($products), 'message' => 'Retrieved successfully'], 200);
+        $perPage = $request->perPage == null ? 10 : $request->perPage;
+        $data = Product::paginate($perPage)->withQueryString();
+        return $this->success(data: $data);
+    }
+
+    public function user(Request $request, $id)
+    {
+        $perPage = $request->perPage == null ? 10 : $request->perPage;
+        $data = Product::query()
+            ->whereHas('userProducts', function ($query) use ($id) {
+                $query->select('id')->where('user_id', [$id]);
+            })
+            ->paginate($perPage)->withQueryString();
+        return $this->success(data: $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        $data = $request->all();
+        $validation = $this->validateProduct($request);
+        if ($validation != null)
+            return $validation;
 
-        $validator = Validator::make($data, [
-            'Name' => 'required|max:255',
-            'Description' => 'required|max:255',
-            'Image' => 'required'
+        // $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
+        // Storage::disk('public')->put($imageName, file_get_contents($request->image));
+
+        $product = Product::create([
+            'name' => $request->name,
+            // 'image' => $imageName,
+            'image' => $request->image->store('images','public'),
+            'description' => $request->description
+        ]);
+
+        $res = [
+            'id' => $product->id,
+        ];
+        return $this->success(data: $res, code: 201);
+    }
+
+    private function validateProduct(Request $request): JsonResponse|array|null
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'description' => 'required|max:255',
+            'image' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
-        }
-
-        $product = product::create($data);
-
-        $product = Product::create($data);
-        return response()->json([
-            'product' => $product
-        ]);
-
+            return $this->error(data: ['error' => $validator->errors()]);
+        } else
+            return null;
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\product  $product
-     * @return \Illuminate\Http\Response
      */
-    public function show(product $product)
+    public function details($id)
     {
-        
-        return response(['product' => new productResource($product), 'message' => 'Retrieved successfully'], 200);
+        $product = Product::find($id);
+        if ($product == null)
+            return $this->error(message: 'product not found', code: 404);
+        return $this->success(data: $product);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\product  $product
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
      */
-    public function update(Request $request,  $id)
+    public function update(UpdateProductRequest $request, $id)
     {
-        // $product->update($request->all());
+        // $validation = $this->validateProduct($request);
+        // if ($validation != null)
+        //     return $validation;
 
-        // return response(['product' => new productResource($product), 'message' => 'Update successfully'], 200);
-        $data = array();
-        $data['name'] = $request->name;
-        $data['description'] = $request->description;
-       $data['image'] = $request->image;
+        $product = Product::find($id);
 
-       $result=$request->file('file')->store('apiDocs');
-    //    if($request->file('public/image')->isValid()){
+        if ($request->image) {
+            // $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
+            // Storage::disk('public')->put($imageName, file_get_contents($request->image));
+            // Storage::disk('public')->delete($product->image);
+            // $product->image = $imageName;
 
-        
-    //     $image = $request->image->store('livros');
-    //     $data['image'] = $image;}
-    //     $product = DB::table('products')->where('id', $id)->update($data);
-        
-         return response(['product' => $product, 'message' => 'Update successfully'], 200);
+            if ($request->hasFile('image')) {
+                $image=$request->image->store('images','public');
+                Storage::disk('public')->delete($product->image);
+                $product->image = $image;
+            }
+        }
 
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->save();
+
+        return $this->success(message: 'product updated successfully', code: 200);
     }
-
-   
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\product  $product
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return JsonResponse
      */
-    public function destroy($name)
-{
-    
-    $product=Product::where('name',$name)->first();
-    $result = $product->delete();
-    if($result){
-        return ['result'=>'Record has been deleted'];
+    public function delete($id)
+    {
+        try {
+            $product = Product::find($id);
+            if ($product == null) {
+                return $this->error(message: 'product doesn\'t exist.', code: 404);
+            }
+
+            $imageName = $product->image;
+
+            $result = $product->delete();
+            if ($result) {
+                Storage::disk('public')->delete($imageName);
+                return $this->success(message: 'product deleted successfully.');
+            } else
+                return $this->error(message: 'can\'t delete the product.', code: 403);
+        } catch (e) {
+            return $this->error(message: 'can\'t delete the product.', code: 403);
+        }
     }
-}
 }
 
